@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Axiom</title>
+    <meta name="description" content="Axiom builds complete software and hardware systems for any kind of business: screens, printers, scanners, controllers and the software that connects them." />
+    <meta name="theme-color" content="#F4F7FB" />
+    <meta property="og:title" content="Axiom" />
+    <meta property="og:description" content="Software and hardware, as one system, for any kind of business." />
+    <meta property="og:url" content="https://axiom.co.il/" />
+    <meta name="twitter:card" content="summary" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Set language, direction and theme before first paint so nothing flashes. -->
+    <script>
+      ;(function () {
+        try {
+          var d = document.documentElement
+          var l = localStorage.getItem('axiom-lang')
+          if (l !== 'he' && l !== 'ar' && l !== 'en') l = 'he'
+          d.lang = l
+          d.dir = l === 'en' ? 'ltr' : 'rtl'
+          var t = localStorage.getItem('axiom-theme')
+          var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+          d.classList.toggle('dark', dark)
+          d.style.colorScheme = dark ? 'dark' : 'light'
+          var m = document.querySelector('meta[name="theme-color"]')
+          if (m) m.setAttribute('content', dark ? '#0B1F3A' : '#F4F7FB')
+        } catch (e) {}
+      })()
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Axiom",
+        "url": "https://axiom.co.il/",
+        "logo": "https://axiom.co.il/icon-512.png",
+        "description": "Axiom builds complete software and hardware systems for businesses."
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

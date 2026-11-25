@@ -1,0 +1,741 @@
+@import 'tailwindcss';
+
+/* Dark mode is driven by a class on <html>, set from the system preference or the toggle. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------
+   Axiom brand tokens (see Visual Identity/brand-tokens.css)
+   ------------------------------------------------------------------ */
+:root {
+  --c-bg: #f4f7fb; /* Paper */
+  --c-surface: #ffffff;
+  --c-surface-2: #e9eff7;
+  --c-fg: #0b1f3a; /* Navy */
+  --c-muted: #4a576c; /* Slate */
+  --c-line: #d9dfe8; /* Mist */
+  --c-accent: #2f5bff; /* Cobalt */
+  --c-on-accent: #ffffff;
+  --c-ok: #0e7a4f;
+  --c-warn: #9a5b00;
+}
+.dark {
+  --c-bg: #0b1f3a;
+  --c-surface: #12294a;
+  --c-surface-2: #17315a;
+  --c-fg: #f4f7fb;
+  --c-muted: #9fb0cc;
+  --c-line: #243b5e;
+  --c-accent: #5b83ff; /* Cobalt Light */
+  --c-on-accent: #0b1f3a;
+  --c-ok: #34c98a;
+  --c-warn: #f2b24c;
+}
+
+@theme inline {
+  --font-sans: 'DM Sans Variable', 'Heebo Variable', 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-accent: var(--c-accent);
+  --color-on-accent: var(--c-on-accent);
+  --color-ok: var(--c-ok);
+  --color-warn: var(--c-warn);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* +1 in left-to-right, -1 in right-to-left. Lets calc() mirror horizontal motion. */
+:root {
+  --dir-sign: 1;
+}
+html[dir='rtl'] {
+  --dir-sign: -1;
+}
+
+/* ------------------------------------------------------------------ base */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--c-bg);
+    color: var(--c-fg);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease;
+  }
+  ::selection {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  button {
+    cursor: pointer;
+  }
+  /* Arabic joins letters, so tracking must stay at zero and lines need more air. */
+  html[lang='ar'] body {
+    line-height: 1.7;
+  }
+}
+
+/* Display type: tight tracking for Latin and Hebrew, none for Arabic. */
+@utility track-display {
+  letter-spacing: -0.035em;
+}
+@utility track-tight2 {
+  letter-spacing: -0.02em;
+}
+html[lang='ar'] .track-display,
+html[lang='ar'] .track-tight2 {
+  letter-spacing: 0;
+}
+/* Display lines are tighter for Latin/Hebrew; Arabic ascenders and diacritics need room. */
+html[lang='ar'] .leading-display {
+  line-height: 1.22;
+}
+@utility leading-display {
+  line-height: 1.02;
+}
+
+/* Hairline that respects the theme. */
+@utility hairline {
+  border: 1px solid var(--c-line);
+}
+
+/* ------------------------------------------------------------------
+   Motion
+   ------------------------------------------------------------------ */
+
+/* Hero headline: every word rises out of a mask. This is the one load sequence. */
+.hero-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-block: 0.06em;
+  margin-block: -0.06em;
+}
+.hero-word > span {
+  display: inline-block;
+  transform: translateY(110%);
+  animation: rise 0.95s var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--i) * 85ms + 150ms);
+}
+@keyframes rise {
+  to {
+    transform: translateY(0);
+  }
+}
+.hero-fade {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fade-up 0.9s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 700ms);
+}
+@keyframes fade-up {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The crossing assembles itself: each stroke slides along its own axis. */
+.cx-back-in {
+  animation: cx-back 1.5s var(--ease-out-expo) 0.15s both;
+}
+.cx-front-in {
+  animation: cx-front 1.5s var(--ease-out-expo) 0.3s both;
+}
+@keyframes cx-back {
+  from {
+    transform: translate(-46px, -46px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes cx-front {
+  from {
+    transform: translate(46px, -46px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Showcase */
+.scene-in {
+  animation: scene-in 0.9s var(--ease-out-expo) both;
+}
+.scene-out {
+  animation: scene-out 0.6s ease both;
+  pointer-events: none;
+}
+@keyframes scene-in {
+  from {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes scene-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+.copy-in {
+  animation: copy-in 0.7s var(--ease-out-expo) both;
+}
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tab-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.tab-fill {
+  transform-origin: left center;
+  animation: tab-fill var(--dur, 7000ms) linear forwards;
+}
+[dir='rtl'] .tab-fill {
+  transform-origin: right center;
+}
+
+/* Scene container: everything inside is sized in em, 1em = 1% of the scene width. */
+.scene {
+  container-type: inline-size;
+}
+.scene-root {
+  font-size: 1cqw;
+  direction: ltr;
+}
+
+/* Scene micro-animations */
+@keyframes ticket-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(2em) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes press {
+  0%,
+  72%,
+  100% {
+    transform: scale(1);
+  }
+  78% {
+    transform: scale(0.94);
+  }
+  86% {
+    transform: scale(1);
+  }
+}
+@keyframes ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+@keyframes travel {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@keyframes print-cycle {
+  0% {
+    transform: translateY(100%);
+  }
+  10% {
+    transform: translateY(100%);
+  }
+  52% {
+    transform: translateY(0%);
+  }
+  88% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 0;
+  }
+}
+@keyframes laser {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--sweep, 6em));
+  }
+}
+@keyframes swap-a {
+  0%,
+  46% {
+    opacity: 1;
+    transform: none;
+  }
+  54%,
+  100% {
+    opacity: 0;
+    transform: translateY(-40%);
+  }
+}
+@keyframes swap-b {
+  0%,
+  46% {
+    opacity: 0;
+    transform: translateY(40%);
+  }
+  54%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes flash {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  54%,
+  72% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.9em);
+  }
+}
+@keyframes mq {
+  to {
+    transform: translateX(calc(var(--dir-sign, 1) * -50%));
+  }
+}
+/* Industries marquee: two copies side by side, shifted by exactly one copy. */
+.mq-track {
+  display: flex;
+  width: max-content;
+  animation: mq var(--mq-dur, 70s) linear infinite;
+}
+.mq-rev .mq-track {
+  animation-direction: reverse;
+}
+.mq-row:hover .mq-track {
+  animation-play-state: paused;
+}
+.mq-row {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+
+/* Queue scene: the ticket slides out of the kiosk slot. */
+@keyframes ticket-out {
+  0%,
+  8% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  22% {
+    transform: translateY(0);
+  }
+  88% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+/* Blueprint dot grid used behind scenes. */
+.dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--c-fg) 11%, transparent) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* Pointer light: a soft glow inside the card and a lit edge, both following the pointer.
+   --mx / --my are written by one delegated listener (see useGlobalSpotlight). Add .spot to any card. */
+.spot {
+  position: relative;
+  isolation: isolate;
+  --spot: var(--c-accent);
+  --spot-glow: 16%;
+  --spot-edge: 80%;
+}
+.spot-inv {
+  --spot: #ffffff;
+  --spot-glow: 14%;
+  --spot-edge: 70%;
+}
+.spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    440px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in oklab, var(--spot) var(--spot-glow), transparent),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+.spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    280px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in oklab, var(--spot) var(--spot-edge), transparent),
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+.spot-soft::after {
+  display: none;
+}
+.spot:hover::before,
+.spot:hover::after {
+  opacity: 1;
+}
+
+/* Hero: a large soft light that trails the pointer, over a faint blueprint grid. */
+.hero-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 680px;
+  height: 680px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--c-accent) 24%, transparent), transparent);
+  transform: translate(calc(var(--gx, calc(50vw + var(--dir-sign) * 16vw)) - 50%), calc(var(--gy, 16rem) - 50%));
+  transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+.hero-grid {
+  background-image: radial-gradient(color-mix(in oklab, var(--c-fg) 14%, transparent) 1px, transparent 1.5px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 70% 30%, #000, transparent 75%);
+}
+
+/* Headings rise out of a mask when they first scroll into view. */
+.rw .w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-block: 0.12em;
+  margin-block: -0.12em;
+}
+.rw .w > span {
+  display: inline-block;
+  transform: translateY(108%);
+  transition: transform 0.95s var(--ease-out-expo);
+  transition-delay: calc(var(--i) * 55ms);
+}
+.rw.in .w > span {
+  transform: none;
+}
+
+/* The crossing, on the home page: plays by itself the first time it comes into view. */
+.br .br-back,
+.br .br-front,
+.br .br-a,
+.br .br-b,
+.br .br-cap {
+  opacity: 0;
+}
+.br.in .br-back {
+  animation: br-back 1.5s var(--ease-out-expo) 0.1s both;
+}
+.br.in .br-front {
+  animation: br-front 1.5s var(--ease-out-expo) 0.28s both;
+}
+.br.in .br-a {
+  animation: br-side-a 1s var(--ease-out-expo) 1s both;
+}
+.br.in .br-b {
+  animation: br-side-b 1s var(--ease-out-expo) 1.15s both;
+}
+.br.in .br-cap {
+  animation: br-cap 0.9s var(--ease-out-expo) 1.7s both;
+}
+@keyframes br-back {
+  from {
+    transform: translate(-60px, -60px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes br-front {
+  from {
+    transform: translate(60px, -60px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes br-side-a {
+  from {
+    transform: translateX(calc(var(--dir-sign) * -36px));
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes br-side-b {
+  from {
+    transform: translateX(calc(var(--dir-sign) * 36px));
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes br-cap {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Process: the line draws itself and each step lights up as the line reaches it. */
+.pr .pr-line,
+.pr .pr-on {
+  opacity: 0;
+}
+.pr.in .pr-line {
+  opacity: 1;
+  animation: pr-line 2.4s linear 0.15s both;
+}
+.pr .pr-line-y {
+  transform-origin: top;
+}
+.pr .pr-line-x {
+  transform-origin: left;
+}
+[dir='rtl'] .pr .pr-line-x {
+  transform-origin: right;
+}
+.pr.in .pr-on {
+  animation: pr-on 0.6s var(--ease-out-expo) calc(var(--i) * 0.8s + 0.15s) both;
+}
+@keyframes pr-line {
+  from {
+    transform: scale(var(--sx, 1), var(--sy, 1));
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes pr-on {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pr .pr-line-y {
+  --sy: 0;
+}
+.pr .pr-line-x {
+  --sx: 0;
+}
+
+/* Thin reading-progress line at the bottom edge of the header. */
+.read-bar {
+  transform: scaleX(var(--sp, 0));
+  transform-origin: left;
+}
+[dir='rtl'] .read-bar {
+  transform-origin: right;
+}
+
+/* Page change. */
+.page-in {
+  animation: page-in 0.6s var(--ease-out-expo) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Form success mark draws its tick. */
+.tick-draw {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: tick-draw 0.6s var(--ease-out-expo) 0.25s forwards;
+}
+@keyframes tick-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .hero-word > span,
+  .hero-fade,
+  .rw .w > span {
+    opacity: 1;
+    transform: none;
+  }
+  .br .br-back,
+  .br .br-front,
+  .br .br-a,
+  .br .br-b,
+  .br .br-cap,
+  .pr .pr-line,
+  .pr .pr-on {
+    opacity: 1;
+  }
+  .mq-track {
+    animation: none;
+    display: block;
+    width: auto;
+  }
+  .mq-copy {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-inline-end: 0;
+  }
+  .mq-dup {
+    display: none;
+  }
+  .mq-row {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* A large, faint wordmark closes the page. It fades out toward the bottom edge. */
+.foot-mark {
+  opacity: 0.07;
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+}
